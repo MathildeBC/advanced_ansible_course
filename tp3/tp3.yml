@@ -1,0 +1,49 @@
+---
+- name: TP3 node1 et 2
+  hosts: apache
+  become: yes
+  become_user: root
+  vars:
+    pck1:
+      - apache2
+      - mysql-server
+
+  tasks:
+    - name: Installation des composants Apache et MySQL
+      ansible.builtin.apt:
+        name: "{{ pck1 }}"
+        state: present
+        update_cache: true
+      register: apt_installed
+
+- name: TP3 node3
+  hosts: gnc
+  become: yes
+  become_user: root
+  vars:
+    pck2:
+      - git
+      - nginx
+      - cowsay
+  
+  tasks:
+    - name: Installation des composants git, nginx et cowsay
+      ansible.builtin.apt:
+        name: "{{ pck2 }}"
+        state: present
+        update_cache: true
+      register: gnc_installed
+
+
+- name: TP3 all
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Installation ufw
+      ansible.builtin.apt:
+        name: ufw
+        state: present
+        update_cache: true
+      when: ansible_facts['os_family'] == "Ubuntu"
