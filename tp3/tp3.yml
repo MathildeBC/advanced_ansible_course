@@ -80,3 +80,20 @@
         state: present
         update_cache: true
       when: ansible_facts['os_family'] == "Ubuntu"
+
+- name: Tp3 étape 6
+  hosts: localhost
+  become: yes
+  become_user: root
+  
+  tasks:
+    - name: Créer /etc/jour selon le jour et l'heure avec template Jinja2
+      gather_facts: yes
+  tasks:
+    - name: Template pour /etc/jour
+      template:
+        src: ../templates/jour.j2
+        dest: /etc/jour
+        owner: root
+        group: root
+        mode: '0644'
