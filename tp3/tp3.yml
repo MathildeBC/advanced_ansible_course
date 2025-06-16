@@ -16,6 +16,17 @@
         update_cache: true
       register: apt_installed
 
+    - name: Gather the rpm package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Copy index.html if apache2 is installed
+      ansible.builtin.template:
+        src: ../templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: '0644'
+      when: "'apache2' in ansible_facts.packages"
+
 - name: TP3 node3
   hosts: gnc
   become: yes
@@ -33,6 +44,17 @@
         state: present
         update_cache: true
       register: gnc_installed
+
+    - name: Gather the rpm package facts
+      ansible.builtin.package_facts:
+        manager: auto
+
+    - name: Copy index.html if nginx is installed
+      ansible.builtin.template:
+        src: ../templates/index.html.j2
+        dest: /var/www/html/index.nginx-debian.html
+        mode: '0644'
+      when: "'nginx' in ansible_facts.packages"
 
 
 - name: TP3 all
