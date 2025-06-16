@@ -1,0 +1,25 @@
+---
+- name: TP2
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Installation des composants
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      register: aptinstall
+      loop:
+        - apache2
+        - mysql-server
+
+    - name: Dire bonjour via Apache    
+      ansible.builtin.copy:
+        content: |
+          Bonjour depuis Ansible
+        dest: /var/www/html/index.html
+      loop: "{{ aptinstall.results }}"
+      when: 
+        - item.item == "apache2"
+        - not item.changed
