@@ -1,0 +1,9 @@
+---
+- name: TP0
+  hosts: all
+
+  tasks:
+    - name: Vim install
+      command: sudo apt install vim
+    - name: Pwd verif
+      command: test -f /etc/passwd
