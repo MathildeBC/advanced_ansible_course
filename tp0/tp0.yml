@@ -2,6 +2,7 @@
 - name: TP0
   hosts: all
   become: yes
+  become_user: root
 
   tasks:
     - name: Vim install
@@ -10,4 +11,5 @@
         state: present
     
     - name: Pwd verif
-      command: test -f /etc/passwd
+      ansible.builtin.file:    
+        path: /etc/passwd
