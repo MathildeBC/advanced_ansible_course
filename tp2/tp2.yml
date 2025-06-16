@@ -23,3 +23,8 @@
       when: 
         - item.item == "apache2"
         - not item.changed
+
+    - name: Demarrage du service apache 
+      ansible.builtin.service:
+        name: apache2
+        state: started
