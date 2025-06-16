@@ -1,0 +1,18 @@
+---
+- import_playbook: ../tp4/tp4.yml
+
+- import_playbook: ../tp3/tp3.yml
+
+- name: TP5
+  hosts: all
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Template pour /etc/last_changed
+      template:
+        src: ../templates/last_changed.j2
+        dest: /etc/last_changed
+        owner: root
+        group: root
+        mode: '0644'
