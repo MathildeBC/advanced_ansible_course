@@ -1,16 +1,18 @@
 ---
-- import_playbook: ../tp4/tp4.yml
+- name: Import playbook TP4
+  import_playbook: ../tp4/tp4.yml
 
-- import_playbook: ../tp3/tp3.yml
+- name: Import playbook TP3
+  import_playbook: ../tp3/tp3.yml
 
 - name: TP5
   hosts: all
-  become: yes
+  become: true
   become_user: root
 
   tasks:
     - name: Template pour /etc/last_changed
-      template:
+      ansible.builtin.template:
         src: ../templates/last_changed.j2
         dest: /etc/last_changed
         owner: root
