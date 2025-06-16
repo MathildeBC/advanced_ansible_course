@@ -27,6 +27,12 @@
         mode: '0644'
       when: "'apache2' in ansible_facts.packages"
 
+    - name: Demarrage du service apache
+      ansible.builtin.service:
+        name: apache2
+        state: started
+      when: "'apache2' in ansible_facts.packages"
+
 - name: TP3 node3
   hosts: gnc
   become: yes
@@ -56,6 +62,11 @@
         mode: '0644'
       when: "'nginx' in ansible_facts.packages"
 
+    - name: Demarrage du service nginx
+      ansible.builtin.service:
+        name: nginx
+        state: started
+      when: "'nginx' in ansible_facts.packages"
 
 - name: TP3 all
   hosts: all
