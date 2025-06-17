@@ -1,0 +1,4 @@
+mysql_root_password: "root_pwd"
+mysql_database: "db_tp6"
+mysql_user: "db_user"
+mysql_password: "db_pwd"
