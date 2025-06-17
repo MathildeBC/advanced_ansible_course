@@ -5,6 +5,18 @@
   become_user: root
 
   tasks:
-    - name: Read CSV
+    - name: Read and save temperature.csv
+      ansible.builtin.set_fact:
+        content_csv: "{{ lookup('file', '../files/temperature.csv').splitlines() }}"
+
+    - name: Delete line
+      ansible.builtin.set_fact:
+        content_unique: "{{ content_csv | unique }}"
+
+    - name: Sort CSV
+      ansible.builtin.set_fact:
+        content_sorted: "{{ content_unique | sort }}"
+
+    - name: Print CSV
       ansible.builtin.debug:
-        msg: "{{ lookup('file', '../files/temperature.csv') }}"
+        msg: "{{ content_sorted | join('\n') }}"
