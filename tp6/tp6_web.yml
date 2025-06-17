@@ -11,10 +11,29 @@
         state: present
         update_cache: true
 
-    - name: Install PHP 7.4+ on node2
+    - name: Install PHP 8.4+ on node2
       ansible.builtin.apt:
-        name: php>=7.4
+        name:
+          - php>=8.4
+          - php-mysql
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-xml
+          - php-zip
+          - php-soap
+          - php-intl
+          - php-fpm
         state: present
+
+    - name: Active proxy_fcgi and PHP-FPM for Apache2
+      community.general.apache2_module:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - proxy_fcgi
+        - setenvif
+        - rewrite
 
     - name: Download WordPress
       ansible.builtin.get_url:
@@ -47,45 +66,3 @@
       ansible.builtin.service:
         name: apache2
         state: restarted
-
-
-- name: TP6 wordpress deployment on node3
-  hosts: db
-  become: true
-  become_user: root
-  vars_files:
-    - vars/db_vars.yml
-
-  tasks:
-    - name: Install MySQLServer 8.0+ on node3
-      ansible.builtin.apt:
-        name: mysql-server>=8.0
-        state: present
-        update_cache: true
-
-    - name: Install PyMySQL
-      ansible.builtin.apt:
-        name: python3-pymysql
-        state: present
-
-    - name: Confirm MySQL Started
-      ansible.builtin.systemd:
-        name: mysql
-        state: started
-        enabled: true
-
-    - name: Create TP6 DB
-      community.mysql.mysql_db:
-        name: "{{ mysql_database }}"
-        state: present
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-
-    - name: Create MySQL user with DB acess
-      community.mysql.mysql_user:
-        name: "{{ mysql_user }}"
-        password: "{{ mysql_password }}"
-        priv: "{{ mysql_database }}.*:ALL"
-        state: present
-        login_user: root
-        login_password: "{{ mysql_root_password }}"

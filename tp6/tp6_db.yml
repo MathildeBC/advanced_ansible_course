@@ -1,0 +1,41 @@
+---
+- name: TP6 wordpress deployment on node3
+  hosts: db
+  become: true
+  become_user: root
+  vars_files:
+    - vars/db_vars.yml
+
+  tasks:
+    - name: Install MySQLServer 8.0+ on node3
+      ansible.builtin.apt:
+        name: mysql-server>=8.0
+        state: present
+        update_cache: true
+
+    - name: Install PyMySQL
+      ansible.builtin.apt:
+        name: python3-pymysql
+        state: present
+
+    - name: Confirm MySQL Started
+      ansible.builtin.systemd:
+        name: mysql
+        state: started
+        enabled: true
+
+    - name: Create TP6 DB
+      community.mysql.mysql_db:
+        name: "{{ mysql_database }}"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+
+    - name: Create MySQL user with DB acess
+      community.mysql.mysql_user:
+        name: "{{ mysql_user }}"
+        password: "{{ mysql_password }}"
+        priv: "{{ mysql_database }}.*:ALL"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
