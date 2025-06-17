@@ -1,0 +1,30 @@
+---
+- name: TP6 wordpress deployment on node2
+  hosts: web
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Install Apache2 on node2
+      ansible.builtin.apt:
+        name: apache2
+        state: present
+        update_cache: true
+
+    - name: Install PHP 7.4 on node2
+      ansible.builtin.apt:
+        name: php=8.4
+        state: present
+
+
+- name: TP6 wordpress deployment on node3
+  hosts: db
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Install MySQL Server on node3
+      ansible.builtin.apt:
+        name: mysql-server=8.0
+        state: present
+        update_cache: true
