@@ -74,29 +74,6 @@
         state: started
         enabled: true
 
-    - name: Secure MySQL root account MySQL
-      community.mysql.mysql_user:
-        login_user: root
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-        name: root
-        host_all: true
-        password: "{{ mysql_root_password }}"
-        check_implicit_admin: true
-        state: present
-
-    - name: Delete root distant acess
-      community.mysql.mysql_user:
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        name: root
-        host: "{{ item }}"
-        state: absent
-      loop:
-        - "::1"
-        - "127.0.0.1"
-        - "%"
-      ignore_errors: true
-
     - name: Create TP6 DB
       community.mysql.mysql_db:
         name: "{{ mysql_database }}"
