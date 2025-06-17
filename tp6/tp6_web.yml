@@ -3,6 +3,8 @@
   hosts: web
   become: true
   become_user: root
+  vars_files:
+    - vars/db_vars.yml
 
   tasks:
     - name: Install Apache2 on node2
