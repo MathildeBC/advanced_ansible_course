@@ -1,7 +1,7 @@
 ---
 - name: TP0
   hosts: all
-  become: yes
+  become: true
   become_user: root
 
   tasks:
@@ -9,7 +9,7 @@
       ansible.builtin.apt:
         name: vim
         state: present
-    
+
     - name: Pwd verif
-      ansible.builtin.file:    
+      ansible.builtin.file:
         path: /etc/passwd

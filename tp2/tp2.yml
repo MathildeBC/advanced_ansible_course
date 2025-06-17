@@ -1,7 +1,7 @@
 ---
 - name: TP2
   hosts: all
-  become: yes
+  become: true
   become_user: root
 
   tasks:
@@ -14,17 +14,18 @@
         - apache2
         - mysql-server
 
-    - name: Dire bonjour via Apache    
+    - name: Dire bonjour via Apache
       ansible.builtin.copy:
         content: |
           Bonjour depuis Ansible
         dest: /var/www/html/index.html
+        mode: '0644'
       loop: "{{ aptinstall.results }}"
-      when: 
+      when:
         - item.item == "apache2"
         - not item.changed
 
-    - name: Demarrage du service apache 
+    - name: Demarrage du service apache
       ansible.builtin.service:
         name: apache2
         state: started
