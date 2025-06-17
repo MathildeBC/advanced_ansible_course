@@ -1,0 +1,10 @@
+---
+- name: TP7 Read CSV and compare data
+  hosts: Node1
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Read CSV
+      ansible.builtin.debug:
+        msg: "{{ lookup('file', '../files/temperature.csv') }}"
