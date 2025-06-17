@@ -1,7 +1,7 @@
 ---
 - name: TP3 node1 et 2
   hosts: apache
-  become: yes
+  become: true
   become_user: root
   vars:
     pck1:
@@ -35,14 +35,14 @@
 
 - name: TP3 node3
   hosts: gnc
-  become: yes
+  become: true
   become_user: root
   vars:
     pck2:
       - git
       - nginx
       - cowsay
-  
+
   tasks:
     - name: Installation des composants git, nginx et cowsay
       ansible.builtin.apt:
@@ -70,7 +70,7 @@
 
 - name: TP3 all
   hosts: all
-  become: yes
+  become: true
   become_user: root
 
   tasks:
@@ -82,7 +82,7 @@
       when: ansible_facts['os_family'] == "Ubuntu"
 
     - name: Template pour /etc/jour
-      template:
+      ansible.builtin.template:
         src: ../templates/jour.j2
         dest: /etc/jour
         owner: root
