@@ -10,12 +10,7 @@
   tasks:
     - name: Read and save temperature.csv
       ansible.builtin.set_fact:
-        content_csv: "{{ lookup('file', '../files/temperature.csv').splitlines() | unique | sort }}"
-
-    - name: Print CSV
-      ansible.builtin.debug:
-        msg: "{{ content_csv | join('\n') }}"
-
+        content_csv: "{{ lookup('file', '../files/temperature.csv') | community.general.from_csv | unique(attribute='time') | sort(attribute='time') }}"
     - name: Call weather API
       ansible.builtin.uri:
         url: "https://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&current=temperature_2m"
@@ -24,12 +19,8 @@
 
     - name: Extract current weather
       ansible.builtin.set_fact:
-        current_temp: "{{ (meteo.content | from_json).current.temperature_2m }}"
-        current_time: "{{ (meteo.content | from_json).current.time | regex_replace(':\\d{2}$', ':00') }}"
+        current_temp: "{{ (meteo.content | from_json).current }}"
 
-    - name: Print weather
+    - name: Print CSV
       ansible.builtin.debug:
-        msg: |
-          Température actuelle : {{ current_temp }}°C
-          Date actuelle : {{ current_time }}
-
+        msg: "{{ ((content_csv | get_temp(current_temp.time) | float) < current_temp.temperature_2m) | ternary('Il fait plus chaud à Paris','Il fait plus froid à Paris') }}"
