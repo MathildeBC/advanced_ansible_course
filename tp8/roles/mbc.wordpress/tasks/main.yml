@@ -26,10 +26,10 @@
   community.general.apache2_module:
     name: "{{ item }}"
     state: present
-    loop:
-      - proxy_fcgi
-      - setenvif
-      - rewrite
+  loop:
+    - proxy_fcgi
+    - setenvif
+    - rewrite
 
 - name: Download WordPress
   ansible.builtin.get_url:
@@ -51,7 +51,7 @@
 
 - name: Configure WordPress
   ansible.builtin.template:
-    src: templates/wp-config.php.j2
+    src: wp-config.php.j2
     dest: /var/www/wordpress/wp-config.php
     force: true
     mode: '0644'

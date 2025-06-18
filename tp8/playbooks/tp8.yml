@@ -1,0 +1,7 @@
+---
+- name: TP8
+  hosts: web
+  become: true
+  become_user: root
+  roles:
+    - mbc.wordpress
