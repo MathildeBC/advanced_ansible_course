@@ -23,4 +23,4 @@
 
     - name: Print CSV
       ansible.builtin.debug:
-        msg: "{{ ((content_csv | get_temp(current_temp.time) | float) < current_temp.temperature_2m) | ternary('Il fait plus chaud à Paris','Il fait plus froid à Paris') }}"
+        msg: "{{ ((content_csv | get_temp(current_temp.time) | float) < current_temp.temperature_2m) | ternary('Il fait plus chaud à Paris','Il fait plus froid à Paris') | reverse_string }}"
