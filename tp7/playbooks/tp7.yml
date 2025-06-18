@@ -3,6 +3,9 @@
   hosts: Node1
   become: true
   become_user: root
+  vars:
+    latitude: 48.86
+    longitude: 2.33
 
   tasks:
     - name: Read and save temperature.csv
@@ -12,3 +15,21 @@
     - name: Print CSV
       ansible.builtin.debug:
         msg: "{{ content_csv | join('\n') }}"
+
+    - name: Call weather API
+      ansible.builtin.uri:
+        url: "https://api.open-meteo.com/v1/forecast?latitude={{ latitude }}&longitude={{ longitude }}&current=temperature_2m"
+        return_content: true
+      register: meteo
+
+    - name: Extract current weather
+      ansible.builtin.set_fact:
+        current_temp: "{{ (meteo.content | from_json).current.temperature_2m }}"
+        current_time: "{{ (meteo.content | from_json).current.time | regex_replace(':\\d{2}$', ':00') }}"
+
+    - name: Print weather
+      ansible.builtin.debug:
+        msg: |
+          Température actuelle : {{ current_temp }}°C
+          Date actuelle : {{ current_time }}
+
