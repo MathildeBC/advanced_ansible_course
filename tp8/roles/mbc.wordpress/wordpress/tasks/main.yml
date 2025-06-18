@@ -1,0 +1,117 @@
+    - name: "Installing webserver package"
+      yum:
+        name:
+          - httpd
+        state: present
+
+    - name: "webserver - adding php support"
+      shell: amazon-linux-extras install php7.4 -y
+
+  # Apache Configuration
+    - name: Create document root
+      file:
+        path: "/var/www/html/{{ httpd_hostname }}"
+        state: directory
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group }}"
+        mode: '0755'
+      tags: [ httpd ]
+
+    - name: Set up Apache VirtualHost
+      template:
+        src: "files/apache.conf.j2"
+        dest: "/etc/httpd/conf.d/default.conf"
+      notify: Reload httpd
+      tags: [ httpd ]
+
+    - name: "installing the Mariadb server pakckage"
+      yum:
+        name:
+          - mariadb-server
+          - MySQL-python
+        state: present
+
+    - name: "Restarting and Enabling Mariadb-Server"
+      service:
+        name: mariadb
+        state: restarted
+        enabled: true
+
+    - name: "Adding Root Password on Mariadb-Server"
+      ignore_errors: true
+      mysql_user:
+        login_user: "root"
+        login_password: ""
+        user: "root"
+        password: "{{ mariadb_root_password }}"
+        host_all: true
+
+    - name: "Removing anonymous users from mariadb server"
+      mysql_user:
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        user: ""
+        password: ""
+        host_all: true
+        state: absent
+
+    - name: "Creating a database on mariadb server {{ mariadb_extra_database }}"
+      mysql_db:
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        name: "{{ mariadb_extra_database }}"
+        state: present
+
+    - name: "Mariadb-Server - Creating User {{ mariadb_extra_user }}"
+      mysql_user:
+        login_user: "root"
+        login_password: "{{ mariadb_root_password }}"
+        user: "{{ mariadb_extra_user }}"
+        password: "{{ mariadb_extra_password }}"
+        host: "localhost"
+        state: present
+        priv: '{{ mariadb_extra_database }}.*:ALL'
+
+    - name: "Downloading Wordpress archive file {{ wp_url }}"
+      get_url:
+        url: "{{ wp_url }}"
+        dest:  /tmp/wordpress.tar.gz
+
+    - name: "Extaracting the wordpress archive file"
+      unarchive:
+        src: /tmp/wordpress.tar.gz
+        dest: /tmp/
+        remote_src: true
+
+    - name: "Copy the wordpress content to /var/www/html/{{ httpd_hostname }}"
+      copy:
+        src: /tmp/wordpress/
+        dest: "/var/www/html/{{ httpd_hostname }}"
+        remote_src: true
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group}}"
+
+    - name: "Wordpress - Creating /var/www/html/{{ httpd_hostname }}/wp-config.php"
+      template:
+        src: files/wp-config.php.j2
+        dest: "/var/www/html/{{ httpd_hostname }}/wp-config.php"
+        owner: "{{ httpd_owner }}"
+        group: "{{ httpd_group}}"
+
+    - name: "post installation clean up"
+      file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - /tmp/wordpress.tar.gz
+        - /tmp/wordpress
+
+    - name: "restart post installation"
+      service:
+        name: "{{ item }}"
+        state: restarted
+        enabled: true
+      with_items:
+        - httpd
+        - mariadb
+

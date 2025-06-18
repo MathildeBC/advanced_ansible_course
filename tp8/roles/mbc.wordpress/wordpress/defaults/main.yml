@@ -1,0 +1,10 @@
+httpd_port: 80
+httpd_owner: "apache"
+httpd_group: "apache"
+httpd_hostname: "www.example.com"
+httpd_conf: "www.example.com.conf"
+mariadb_root_password: "mysqlroot123"
+mariadb_extra_user: "wordpress"
+mariadb_extra_password: "wordpress"
+mariadb_extra_database: "wordpress"
+wp_url: "https://wordpress.org/latest.zip"
