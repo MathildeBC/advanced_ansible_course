@@ -1,0 +1,14 @@
+---
+- name: TP8 - Install docker & molecule
+  hosts: Node1
+  become: true
+  become_user: root
+  roles:
+    - geerlingguy.docker
+
+  tasks:
+    - name: Install molecule
+      ansible.builtin.pip:
+        break_system_packages: true
+        name: ansible-dev-tools
+        state: present
