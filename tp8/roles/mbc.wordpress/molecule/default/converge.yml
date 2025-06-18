@@ -1,4 +1,5 @@
 ---
 - name: Include a playbook from a collection
+  hosts: web
   roles:
     - mbc.wordpress
