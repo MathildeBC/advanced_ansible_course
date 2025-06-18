@@ -1,0 +1,58 @@
+# SPDX-License-Identifier: MIT-0
+---
+# tasks file for mbc.wordpress
+- name: Install Apache2 on node2
+  ansible.builtin.apt:
+    name: apache2
+    state: present
+    update_cache: true
+
+- name: Install PHP 8.4+ on node2
+  ansible.builtin.apt:
+    name:
+      - php>=8.4
+      - php-mysql
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-zip
+      - php-soap
+      - php-intl
+      - php-fpm
+    state: present
+
+- name: Active proxy_fcgi and PHP-FPM for Apache2
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+    loop:
+      - proxy_fcgi
+      - setenvif
+      - rewrite
+
+- name: Download WordPress
+  ansible.builtin.get_url:
+    url: http://fr.wordpress.org/latest-fr_FR.tar.gz
+    dest: /var/www/latest-fr_FR.tar.gz
+    mode: '0644'
+    force_basic_auth: true
+
+- name: Unzip WordPress
+  ansible.builtin.unarchive:
+    src: /var/www/latest-fr_FR.tar.gz
+    dest: /var/www/
+    remote_src: true
+
+- name: Delete targz
+  ansible.builtin.file:
+    path: /var/www/latest-fr_FR.tar.gz
+    state: absent
+
+- name: Configure WordPress
+  ansible.builtin.template:
+    src: templates/wp-config.php.j2
+    dest: /var/www/wordpress/wp-config.php
+    force: true
+    mode: '0644'
+  notify: Apache2 restart
