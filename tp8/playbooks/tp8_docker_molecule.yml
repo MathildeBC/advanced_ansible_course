@@ -7,8 +7,14 @@
     - geerlingguy.docker
 
   tasks:
-    - name: Install molecule
+    - name: Install dev-tools
       ansible.builtin.pip:
         break_system_packages: true
         name: ansible-dev-tools
+        state: present
+
+    - name: Install molecule
+      ansible.builtin.pip:
+        break_system_packages: true
+        name: molecule-plugins[docker]
         state: present
